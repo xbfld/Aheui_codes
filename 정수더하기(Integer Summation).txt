@@ -1,0 +1,6 @@
+방빠쳐이더망희
+
+// 입력받은 정수를 모두 더한다.
+// 0을 입력한 경우 더한 값을 출력하고 종료한다.
+// get integer inputs untill it's zero.
+// if so, print summation of all intput integers, and terminate.
