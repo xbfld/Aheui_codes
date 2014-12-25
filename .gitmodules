@@ -1,0 +1,3 @@
+[submodule "pyaheui"]
+	path = pyaheui
+	url = https://github.com/aheui/pyaheui.git
