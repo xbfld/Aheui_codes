@@ -29,6 +29,8 @@ ea = importlib.import_module('pyaheui.esotope-aheui')
 
 class AheuiCodeBlock(object):
 
+	EMPTYAHEUICODE = ea.AheuiCode('')
+
 	def __init__(self, acode):
 		acode = copy.deepcopy(acode)
 		if isinstance(acode, unicode):
@@ -80,6 +82,53 @@ class AheuiCodeBlock(object):
 			["".join([l(*char) if char else pad for char in line\
 				]) for line in acode.space])
 
+	def remove_margin(self, acode):
+		space = acode.space
+		if not space: return acode
+
+		sizex = acode.sizex
+		sizey = acode.sizey
+
+		def v(l):#return True if it's emptyrow
+			for i in l:
+				if i: return False
+			return True
+
+		is_empty = True
+		for i in xrange(acode.sizey):
+			if not v(space[i]):
+				space = space[i:]
+				sizey -= i
+				is_empty = False
+				break
+		if is_empty: 
+			acode.space = EMPTYAHEUICODE
+		while space and v(space[-1]):
+			space.pop()
+			sizey -= 1
+
+		def h(s,index):#return True if it's emptycloumn
+			for l in s:
+				if l[index]: return False
+			return True
+
+		for i in xrange(acode.sizex):
+			if not h(space,i):
+				space = [line[i:] for line in space]
+				sizex -= i
+				is_empty = False
+				break
+		while space and h(space,-1):
+			[line.pop() for line in space]
+			sizex -= 1
+
+		acode.space = space
+		acode.sizex = sizex
+		acode.sizey = sizey
+		return acode
+
+
+
 	make_rect_block = classmethod(make_rect_block)
 	flip_h = classmethod(flip_h)
 	flip_v = classmethod(flip_v)
@@ -87,24 +136,28 @@ class AheuiCodeBlock(object):
 	rotate_R = classmethod(rotate_R)
 	rotate_H = classmethod(rotate_H)
 	get_unicode = classmethod(get_unicode)
+	remove_margin = classmethod(remove_margin)
+
 
 
 
 def main():
-	a=AheuiCodeBlock(u'\uac00\ub7a3s\ns\uafa3\ud7a3')
-	print a.block.space
-	AheuiCodeBlock.flip_h(a.block)
-	print a.block.space
-	AheuiCodeBlock.flip_v(a.block)
-	print a.block.space
-	AheuiCodeBlock.rotate_L(a.block)
-	print a.block.space
-	AheuiCodeBlock.rotate_R(a.block)
-	print a.block.space
-	AheuiCodeBlock.rotate_H(a.block)
-	print a.block.space
+	print 'main'
+	a=AheuiCodeBlock(u'\n\ns\uac00\ub7a3sss\nss\uafa3\ud7a3ss\n5')
 	print AheuiCodeBlock.get_unicode(a.block, u'\u3147')
-	print a.block.space
+	AheuiCodeBlock.flip_h(a.block)
+	print AheuiCodeBlock.get_unicode(a.block, u'\u3147')
+	AheuiCodeBlock.flip_v(a.block)
+	print AheuiCodeBlock.get_unicode(a.block, u'\u3147')
+	AheuiCodeBlock.rotate_L(a.block)
+	print AheuiCodeBlock.get_unicode(a.block, u'\u3147')
+	AheuiCodeBlock.rotate_R(a.block)
+	print AheuiCodeBlock.get_unicode(a.block, u'\u3147')
+	AheuiCodeBlock.rotate_H(a.block)
+	print AheuiCodeBlock.get_unicode(a.block, u'\u3147')
+	AheuiCodeBlock.remove_margin(a.block)
+	print AheuiCodeBlock.get_unicode(a.block, u'\u3147')
+
 
 if __name__ == '__main__':
     sys.exit(main())
