@@ -39,6 +39,8 @@ class AheuiCodeBlock(object):
 			acode = ea.AheuiCode(str(acode).encode('utf-8'))
 		self.block = self.make_rect_block(acode)
 
+	# def space_to_aheuicode(cls, space):
+
 	def make_rect_block(self, acode):
 		sizex = acode.sizex
 		space = acode.space
@@ -55,6 +57,7 @@ class AheuiCodeBlock(object):
 		for line in space:
 			line.reverse()
 		return acode
+
 	def flip_v(self, acode):
 		acode.space.reverse()
 		return acode
@@ -101,8 +104,11 @@ class AheuiCodeBlock(object):
 				sizey -= i
 				is_empty = False
 				break
-		if is_empty: 
-			acode.space = EMPTYAHEUICODE
+		if is_empty:
+			acode.space = self.EMPTYAHEUICODE.space
+			acode.sizex = self.EMPTYAHEUICODE.sizex
+			acode.sizey = self.EMPTYAHEUICODE.sizey
+			return acode
 		while space and v(space[-1]):
 			space.pop()
 			sizey -= 1
@@ -127,6 +133,66 @@ class AheuiCodeBlock(object):
 		acode.sizey = sizey
 		return acode
 
+	def expand_by(self, acode, t=0, b=0, l=0, r=0):
+		space = acode.space
+		sizex = acode.sizex
+		sizey = acode.sizey
+		if not space:
+			sizex = l + r
+			sizey = t + b
+			if sizex<=0 or sizey<=0:
+				raise IndexError('AheuiCode size cannot be negative')
+			else:
+				acode.space = [[()]*sizex]*sizey
+				acode.sizex = sizex
+				acode.sizey = sizey
+				return acode
+		sizenx = sizex + l + r
+		sizeny = sizey + t + b
+		if sizenx<0 or sizeny<0:
+			raise IndexError('AheuiCode size cannot be negative')
+		elif sizenx==0 or sizeny==0:
+			acode.space = self.EMPTYAHEUICODE.space
+			acode.sizex = self.EMPTYAHEUICODE.sizex
+			acode.sizey = self.EMPTYAHEUICODE.sizey
+			return acode
+		if t>=0:
+			space = [[()]*sizex]*t + space
+			if b>=0:
+				space += [[()]*sizex]*b
+			else:
+				space = space[:b]
+		else:
+			if b>=0:
+				space += [[()]*sizex]*b
+			else:
+				space = space[:b]
+			space = space[-t:]
+		if l>=0:
+			space = [[()]*l+line for line in space]
+			if r>=0:
+				space = [line+[()]*r for line in space]
+			else:
+				space = [line[:r] for line in space]
+		else:
+			if r>=0:
+				space = [line+[()]*r for line in space]
+			else:
+				space = [line[:r] for line in space]
+			space = [line[-l:] for line in space]
+
+		acode.space = space
+		acode.sizex = sizenx
+		acode.sizey = sizeny
+
+		return acode
+
+	# def union(self, acode1, acode2, xpos, ypos):
+	# 	if xpos>=0 and ypos>=0
+
+
+
+
 
 
 	make_rect_block = classmethod(make_rect_block)
@@ -137,7 +203,7 @@ class AheuiCodeBlock(object):
 	rotate_H = classmethod(rotate_H)
 	get_unicode = classmethod(get_unicode)
 	remove_margin = classmethod(remove_margin)
-
+	expand_by = classmethod(expand_by)
 
 
 
@@ -145,6 +211,8 @@ def main():
 	print 'main'
 	a=AheuiCodeBlock(u'\n\ns\uac00\ub7a3sss\nss\uafa3\ud7a3ss\n5')
 	print AheuiCodeBlock.get_unicode(a.block, u'\u3147')
+	print a.block.space
+	print a.block.sizex, a.block.sizey
 	AheuiCodeBlock.flip_h(a.block)
 	print AheuiCodeBlock.get_unicode(a.block, u'\u3147')
 	AheuiCodeBlock.flip_v(a.block)
@@ -157,7 +225,46 @@ def main():
 	print AheuiCodeBlock.get_unicode(a.block, u'\u3147')
 	AheuiCodeBlock.remove_margin(a.block)
 	print AheuiCodeBlock.get_unicode(a.block, u'\u3147')
+	print a.block.space
+	print a.block.sizex, a.block.sizey
 
+	print 'main'
+	a=AheuiCodeBlock(u'sss\njj')
+	print AheuiCodeBlock.get_unicode(a.block, u'\u3147')
+	print a.block.space
+	print a.block.sizex, a.block.sizey
+	AheuiCodeBlock.flip_h(a.block)
+	print AheuiCodeBlock.get_unicode(a.block, u'\u3147')
+	AheuiCodeBlock.flip_v(a.block)
+	print AheuiCodeBlock.get_unicode(a.block, u'\u3147')
+	AheuiCodeBlock.rotate_L(a.block)
+	print AheuiCodeBlock.get_unicode(a.block, u'\u3147')
+	AheuiCodeBlock.rotate_R(a.block)
+	print AheuiCodeBlock.get_unicode(a.block, u'\u3147')
+	AheuiCodeBlock.rotate_H(a.block)
+	print AheuiCodeBlock.get_unicode(a.block, u'\u3147')
+	AheuiCodeBlock.remove_margin(a.block)
+	print a.block.space
+	print a.block.sizex, a.block.sizey
+
+	print 'main'
+	a=AheuiCodeBlock(u's\n')
+	print AheuiCodeBlock.get_unicode(a.block, u'\u3147')
+	print a.block.space
+	print a.block.sizex, a.block.sizey
+	AheuiCodeBlock.flip_h(a.block)
+	print AheuiCodeBlock.get_unicode(a.block, u'\u3147')
+	AheuiCodeBlock.flip_v(a.block)
+	print AheuiCodeBlock.get_unicode(a.block, u'\u3147')
+	AheuiCodeBlock.rotate_L(a.block)
+	print AheuiCodeBlock.get_unicode(a.block, u'\u3147')
+	AheuiCodeBlock.rotate_R(a.block)
+	print AheuiCodeBlock.get_unicode(a.block, u'\u3147')
+	AheuiCodeBlock.rotate_H(a.block)
+	print AheuiCodeBlock.get_unicode(a.block, u'\u3147')
+	AheuiCodeBlock.remove_margin(a.block)
+	print a.block.space
+	print a.block.sizex, a.block.sizey
 
 if __name__ == '__main__':
     sys.exit(main())
