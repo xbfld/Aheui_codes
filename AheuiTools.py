@@ -69,7 +69,12 @@ def flip_lr(acode):
 	sizex = acode.sizex
 	sizey = acode.sizey
 	
-	space = [l[::-1] for l in space]
+	def lr(cell):
+		if not cell: return ()
+		m = range(4,8)+range(0,4)+range(8,21)
+		a, b, c = cell
+		return (a, m[b], c)
+	space = [map(lr, l[::-1]) for l in space]
 	result = space_to_aheuicode(space, sizex, sizey)
 	return result
 
@@ -78,7 +83,12 @@ def flip_ud(acode):
 	sizex = acode.sizex
 	sizey = acode.sizey
 	
-	space = space[::-1]
+	def ud(cell):
+		if not cell: return ()
+		m = range(0,8)+range(13,18)+range(8,13)+range(18,21)
+		a, b, c = cell
+		return (a, m[b], c)
+	space = [map(ud, l) for l in space[::-1]]
 	result = space_to_aheuicode(space, sizex, sizey)
 	return result
 
@@ -90,43 +100,45 @@ def rot90(acode, k=1):
 	if k==1:
 		sizex = sizey
 		sizey = sizex
-		space = [list(i) for i in zip(*space)][::-1]
+		def l(cell):
+			if not cell: return ()
+			m = range(21)
+			l = [8, 12, 13, 17, 4, 6, 0, 2, 20, 18]
+			o = [0, 2, 4, 6, 8, 12, 13, 17, 18, 20]
+			for i in range(len(o)):
+				m[o[i]] = l[i]
+			a, b, c = cell
+			return (a, m[b], c)
+		space = [map(l, list(i)) for i in zip(*space)][::-1]
 	if k==2:
-		space = [line[::-1] for line in space][::-1]
+		def h(cell):
+			if not cell: return ()
+			m = range(4,8)+range(0,4)+range(13,18)+range(8,13)+range(18,21)
+			a, b, c = cell
+			return (a, m[b], c)
+		space = [map(h, line[::-1]) for line in space][::-1]
 	if k==3:
 		sizex = sizey
 		sizey = sizex
-		space = [list(i)[::-1] for i in zip(*space)]
+		def r(cell):
+			if not cell: return ()
+			m = range(21)
+			l = [13, 17, 8, 12, 0, 2, 4, 6, 20, 18]
+			o = [0, 2, 4, 6, 8, 12, 13, 17, 18, 20]
+			for i in range(len(o)):
+				m[o[i]] = l[i]
+			a, b, c = cell
+			return (a, m[b], c)
+		space = [map(r, list(i))[::-1] for i in zip(*space)]		
 	result = space_to_aheuicode(space, sizex, sizey)
 	return result
-
 
 def rotate_L(acode):
-	space = copy.deepcopy(acode.space)
-	sizex = acode.sizey
-	sizey = acode.sizex
-	
-	space = [list(i) for i in zip(*space)][::-1]
-	result = space_to_aheuicode(space, sizex, sizey)
-	return result
-
+	return rot90(acode, k=1)
 def rotate_R(acode):
-	space = copy.deepcopy(acode.space)
-	sizex = acode.sizey
-	sizey = acode.sizex
-	
-	space = [list(i)[::-1] for i in zip(*space)]
-	result = space_to_aheuicode(space, sizex, sizey)
-	return result
-
+	return rot90(acode, k=3)
 def rotate_H(acode):
-	space = copy.deepcopy(acode.space)
-	sizex = acode.sizex
-	sizey = acode.sizey
-	
-	space = [line[::-1] for line in space][::-1]
-	result = space_to_aheuicode(space, sizex, sizey)
-	return result
+	return rot90(acode, k=2)
 
 def to_unicode(acode, pad=u'\u3147'):
 	#pad U+3147 is ieung
