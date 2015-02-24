@@ -129,7 +129,7 @@ def rot90(acode, k=1):
 				m[o[i]] = l[i]
 			a, b, c = cell
 			return (a, m[b], c)
-		space = [map(r, list(i))[::-1] for i in zip(*space)]		
+		space = [map(r, list(i))[::-1] for i in zip(*space)]
 	result = space_to_aheuicode(space, sizex, sizey)
 	return result
 
@@ -237,7 +237,15 @@ def expand_by(acode, t=0, b=0, l=0, r=0):
 	result = space_to_aheuicode(space, sizex, sizey)
 	return result
 
+def examin_direction(acode):
+	space = copy.deepcopy(acode.space)
+	sizex = acode.sizex
+	sizey = acode.sizey
 
+	space = [[(a[0],9,a[-1]) if a else () for a in l ] for l in space]
+
+	result = space_to_aheuicode(space, sizex, sizey)
+	return result
 
 def main():
 	print 'main'
