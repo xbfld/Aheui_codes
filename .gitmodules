@@ -1,3 +1,3 @@
 [submodule "pyaheui"]
-	path = pyaheui
+	path = AheuiEditer/pyaheui
 	url = https://github.com/aheui/pyaheui.git
